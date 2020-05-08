@@ -1,14 +1,15 @@
 <template>
   <div class="card__money">
-		<span>
-			$90,000,000,000 left
-		</span>
+		<span> ${{parseInt(money).toLocaleString()}} left </span>
   </div>
 </template>
 
 <script>
+import { mapGetters } from 'vuex';
 export default {
-
+	computed: {
+		...mapGetters(['money'])
+	}
 }
 </script>
 

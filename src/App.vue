@@ -4,27 +4,24 @@
       <Spend/>
       <Money/>
       <div class="app__components__grid">
-        <div class="app__components__grid__items" v-for="item in items" :key="item.name">
+        <div class="app__components__grid__items" v-for="(item, index) in items" :key="index" ref="items">
           <div class="app__components__grid__items__item">
             <div class="app__components__grid__items__item__img">
               <img :src="item.image">
             </div>   
           <div class="app__components__grid__items__item__description">
               <p class="app__components__grid__items__item__description__name">{{item.name}}</p>
-              <p class="app__components__grid__items__item__description__price"> ${{item.price}}</p>
+              <p class="app__components__grid__items__item__description__price"> ${{parseInt(item.price).toLocaleString()}}</p>
             </div>
             <div class="app__components__grid__items__item__buttons">
-              <button class="app__components__grid__items__item__buttons__sell" :disabled="item.count === 0" v-on:click="item.count--">Sell</button>
-              <input class="app__components__grid__items__item__buttons__input" type="text" :value="item.count">
-              <button class="app__components__grid__items__item__buttons__buy" v-on:click="item.count++">Buy</button>
+              <button class="app__components__grid__items__item__buttons__sell" :disabled="item.count <= 0" v-on:click="item.count--">Sell</button>
+                <input type="number" v-model="item.count">
+              <button class="app__components__grid__items__item__buttons__buy" :disabled="item.price > money" v-on:click="item.count++">Buy</button>
             </div>
           </div> 
         </div>
       </div>
-      <div>
-        <Shopping :item="items" v-if="items.find(item => item.count > 0)"/>
-      </div>
-     
+      <Shopping :item="items" v-if="items.find(item => item.count > 0)"/>
     </div>
   </div>
 </template>
@@ -35,6 +32,7 @@ import Spend from './components/Spend'
 import Money from './components/Money'
 import Shopping from './components/Shopping'
 
+import { mapGetters } from 'vuex';
 export default {
   components: {
     Spend,
@@ -42,9 +40,8 @@ export default {
     Shopping
   },
   computed: {
-    items() {
-      return this.$store.getters['items:getItems']
-    }
+    ...mapGetters(['items']),
+    ...mapGetters(['money'])
   }
 }
 </script>
@@ -129,7 +126,7 @@ export default {
                     background-color: rgb(241, 242, 246) !important;
                   }
                 }
-                .app__components__grid__items__item__buttons__input {
+                input{
                   max-width: 100px;
                   text-align: center;
                   font-size: 16px;
@@ -140,6 +137,11 @@ export default {
                   border-color: rgb(178, 190, 195);
                   border-image: initial;
                 }
+                input::-webkit-outer-spin-button,
+                input::-webkit-inner-spin-button {
+                    -webkit-appearance: none;
+                    margin: 0;
+                  }
                 .app__components__grid__items__item__buttons__buy {
                   background-color: rgb(5, 196, 107);
                   color: white;
@@ -165,18 +167,18 @@ export default {
 
   @media (max-width: 1220px) {
     body > .app > .app__components {
-      width: 90%;
+      width: 98%;
     }
   }
 
   @media (max-width: 1000px) {
-    .grid {
+    body > .app > .app__components > .app__components__grid {
       grid-template-columns: repeat(2, 1fr);
     }
   }
 
   @media (max-width: 630px) {
-    .grid {
+    body > .app > .app__components > .app__components__grid  {
       grid-template-columns: repeat(1, 100%);
     }
   }
